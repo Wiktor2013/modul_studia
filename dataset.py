@@ -1,4 +1,4 @@
-from random import shuffle   # ten import zapewnia odpowiednie mieszanie danych
+from random import shuffle   # ten import zapewnia odpowiednie mieszanie danych w funkcji split_data
 
 
 class Dataset:
@@ -8,6 +8,7 @@ class Dataset:
     test = None
     validate = None
 
+# Wczytanie datasetu poprzez zwykłe czytanie linii w pliku (readlines)
     def load_data(self, filename, header=True, delimiter=','):
         with open(filename, "r") as f:
             self.labels = []
@@ -15,12 +16,14 @@ class Dataset:
             if header:
                 self.labels = f.readline().replace("\n", "").split(delimiter)
             for row in f:
-                if row != "\n":
+                if row != "\n":  # to dodałem bo ktorys z wierszy pliku z danymi mial gołego entera co powodowało błąd
                     self.data.append(row.replace("\n", "").split(delimiter))
 
+# Wypisanie etykiet
     def show_labels(self):
         print(self.labels if self.labels else "No labels in dataset")
 
+# Wypisanie danych datasetu, bez parametrow cały dataset, z parametrami tylko fragment ograniczony parametrami
     def show_data(self, start=None, stop=None):
         if self.data:
             for i in range(len(self.data)):
@@ -32,14 +35,16 @@ class Dataset:
         else:
             print("No data in dataset")
 
+# Podzial datasetu na testowy, treningowy i walidacyjny. Parametry okreslaja jaka czesc zioru trafia
+    # do poszczegolnych podzbiorow
     def split_data(self, train_ratio, test_ratio, validate_ratio):
-        if train_ratio + test_ratio + validate_ratio != 1:
+        if train_ratio + test_ratio + validate_ratio != 1: # tu zamiast procentow dalem ulamki
             print("Incorrect ratio, must be sum of 1")
             return
         train_count = train_ratio * len(self.data)
         test_count = test_ratio * len(self.data)
 
-        shuffle(self.data)
+        shuffle(self.data) # to trzeba dodac aby sie dane z roznych kategorii mieszaly
         self.train = []
         self.test = []
         self.validate = []
@@ -53,7 +58,7 @@ class Dataset:
 
     def freq(self, label):
         if label not in self.labels:
-            print("Label not exist!")
+            print("Label does not exist!")
             return
         col_no = self.labels.index(label)
         fr = {}
